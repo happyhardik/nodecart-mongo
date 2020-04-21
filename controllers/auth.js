@@ -4,10 +4,12 @@ const nodemailer = require("nodemailer");
 const sendgirdTransport = require("nodemailer-sendgrid-transport");
 const {validationResult} = require("express-validator");
 
+const configs = require("../utils/configs");
+
 // the key is being deleted after usage :)
 const transporter = nodemailer.createTransport(sendgirdTransport({
     auth: {
-        api_key: ""
+        api_key: configs.sendGridApiKey
     }
 }));
 

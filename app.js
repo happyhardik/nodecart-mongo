@@ -13,6 +13,7 @@ const shopRouter = require('./routes/shop');
 const authRouter = require('./routes/auth');
 const errorController = require('./controllers/errors');
 const User = require("./models/user");
+const configs = require("./utils/configs");
 
 const MONGODB_CONNECTIONSTRING = "mongodb+srv://mongodb_user:urvi222jogF7ydSL@cluster0-lz5u1.gcp.mongodb.net/shop?w=majority";
 
@@ -45,7 +46,7 @@ app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'));
 app.use(express.static(path.join(__dirname,"public")));
 app.use("/images",express.static(path.join(__dirname,"images")));
 // this salt should be passed as a parameter
-app.use(session({secret: 'XJuI98rTlyk88gj45bwkxW#k99LjS', resave: false, saveUninitialized: false, store: store}));
+app.use(session({secret: configs.salt, resave: false, saveUninitialized: false, store: store}));
 app.use(csrfProtection);
 
 

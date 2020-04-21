@@ -1,0 +1,24 @@
+extends ../layouts/main-layout.pug
+block styles
+    link(rel="stylesheet", href="/css/product.css")
+block content
+    h1 Welcome to my shop
+    if products && products.length > 0
+        .grid
+            each product in products
+                article.card.product-item
+                    header.card__header
+                        h1.product__title #{product.title}
+                    .card__image
+                        img(src="/"+product.imageUrl, alt=product.title)
+                    .card__content
+                        h2.product__price $#{product.price}
+                        p.product__description #{product.description}
+                    .card__actions
+                        form(action="/cart",method="post")
+                            input(type="hidden", value=product._id, name="productId")
+                            input(type="hidden",name="_csrf",value=csrfToken)
+                            button.btn(type="submit") Add to cart
+        include ../layouts/pagination.pug
+    else 
+        h2 No products found.

@@ -1,0 +1,20 @@
+extends ../layouts/main-layout.pug
+
+block content
+    h1 My Orders
+    if orders && orders.length > 0
+        .grid
+        each order in orders
+            article.card.cart__item
+                if order.products && order.products.length > 0
+                    .gird
+                    h3 # #{order._id} 
+                        a(href="/order/"+order._id) View Invoice
+                    each product in order.products
+                        article.order__item
+                            h4 #{product.product.title} (#{product.qty})
+                else
+                    h3 No products in order!
+            br
+    else 
+        h2 No orders placed!

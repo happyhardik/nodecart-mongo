@@ -1,0 +1,10 @@
+section.pagination.centered
+    if hasPrevPage
+        a.btn(href="?page=1") << First
+    if hasPrevPage
+        a.btn(href="?page="+(currentPage-1)) < #{currentPage-1}
+    a.btn(href="?page="+currentPage, class="active") #{currentPage}
+    if hasNextPage
+        a.btn(href="?page="+(currentPage+1)) #{currentPage+1} >
+    if currentPage != lastPage
+        a.btn(href="?page="+lastPage) Last >>

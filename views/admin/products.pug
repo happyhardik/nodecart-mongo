@@ -16,10 +16,11 @@ block content
                         p.product__description #{product.description}
                     .card__actions
                         a.btn(href="/admin/product-edit/"+product._id+"?edit=true") Edit
-                        form(action="/admin/product-delete",method="post")
-                            input(type="hidden", value=product._id, name="id")
-                            input(type="hidden",name="_csrf",value=csrfToken)
-                            button.btn(type="submit") Delete
+                        //form(action="/admin/product-delete",method="post")
+                        input(type="hidden", value=product._id, name="id")
+                        input(type="hidden",name="_csrf",value=csrfToken)
+                        button.btn(onclick="deleteProduct(this)") Delete
         include ../layouts/pagination.pug
     else 
         h2 No products found.
+    script(src="/js/script.js")

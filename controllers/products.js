@@ -139,18 +139,19 @@ exports.postProductUpdate = (req,res,next) => {
     }).catch(err => next(err));
 }
 
-exports.postProductDelete = (req,res,next) => {
+exports.deleteProduct = (req,res,next) => {
     console.log("delete product");
-    Product.findById(req.body.id)
+    Product.findById(req.params.productId)
     .then(product => {
-        if(!product) return next(new Error("Cannot find product"));
+        if(!product) return res.status(500).json({"message":"error!","error":"Cannot find the product"});
         FileHelper.deleteFile(product.imageUrl);
-        return Product.findByIdAndRemove(req.body.id);
+        return Product.findByIdAndRemove(req.params.productId);
     })
     .then(result => {
         console.log("Product destroyed");
-        res.redirect("/admin/products");
-    }).catch(err => next(err));
+        res.status(200).json({"message":"Success!"});
+        //res.redirect("/admin/products");
+    }).catch(err => res.status(500).json({"message":"error!","error":err}));
 }
 
 exports.getProducts = (req,res,next) => {

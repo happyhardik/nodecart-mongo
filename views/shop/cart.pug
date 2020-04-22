@@ -13,8 +13,9 @@ block content
                     button.btn(type="submit") Delete
         br
         .centered   
-            form(action="/post-order-add",method="post")
+            //form(action="/post-order-add",method="post")
                 input(type="hidden",name="_csrf",value=csrfToken)
                 button.btn(type="submit") Order Now
+            a(href="/checkout") Order Now!
     else
         h2 No products in cart!

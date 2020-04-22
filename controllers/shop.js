@@ -1,15 +1,18 @@
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
+const configs = require("../utils/configs");
+const stripe = require("stripe")(configs.stripe.secret_key);
 
 const Product = require("../models/product");
 const Order = require("../models/order");
 const path = require("../utils/path");
 
+
 const ITEMS_PER_PAGE = 1;
 
 exports.getCart = (req,res,next) => {
     console.log("Get Cart");
-    if(!req.user) res.redirect("/login");
+
     req.user
     .populate("cart.items.productId")
     .execPopulate()
@@ -21,7 +24,7 @@ exports.getCart = (req,res,next) => {
 
 exports.postCart = (req,res,next) => {
     console.log("Post Cart");
-    if(!req.user) res.redirect("/login");
+
     console.log(req.user);
     const productId = req.body.productId;
     Product.findById(productId)
@@ -36,7 +39,42 @@ exports.postCart = (req,res,next) => {
 
 exports.getCheckout = (req,res,next) => {
     console.log("Checkout");
-    res.render("shop/checkout", {title: "Checkout",path:"/checkout"});
+    let total =0;
+    let products;
+    let user;
+    req.user
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then((u) => {
+        user = u;
+        products = user.cart.items;
+        
+        products.forEach(p => {
+            total += p.qty * p.productId.price;
+        });
+        return stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            line_items: products.map(p => {
+                return {
+                    name: p.productId.title,
+                    description: p.productId.description,
+                    amount: p.productId.price*100,
+                    currency: 'usd',
+                    quantity: p.qty
+                };
+            }),
+            success_url: req.protocol+"://"+req.get('host')+"/checkout/success", //http://localhost:3000/checkout/success
+            cancel_url: req.protocol+"://"+req.get('host')+"/checkout/cancel"
+        });
+    })
+    .then((session) => {
+        res.render("shop/checkout", {title: "Checkout",path:"/checkout",cart:user.cart, total: total, sessionId: session.id});
+    })
+    .catch(err => next(new Error(err)));
+}
+
+exports.postCheckout = (req,res,next) => {
+
 }
 
 exports.getIndex = (req,res,next) => {
@@ -80,8 +118,36 @@ exports.postCartItemDelete = (req,res,next) => {
         res.redirect("/cart");
     }).catch(err => next(new Error(err)));
 }
+
+exports.getCheckoutSuccess = (req,res,next) => {
+    req.user
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then((user) => {
+        products = req.user.cart.items.map(p => {
+            console.log(p);
+            return p = {product: {...p.productId._doc}, qty: p.qty};
+        })
+        const order = new Order({
+            user: {
+                email: req.user.email,
+                userId: req.user
+            },
+            products: products
+        });
+        return order.save();
+    })
+    .then (result =>{
+        return req.user.clearCart();
+    })
+    .then (result => {
+        res.redirect("/orders");
+    })
+    .catch(err => next(new Error(err)));
+}
+
 exports.postOrderAdd = (req,res,next) => {
-    if(!req.user) res.redirect("/login");
+
     req.user
     .populate("cart.items.productId")
     .execPopulate()

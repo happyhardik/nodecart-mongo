@@ -15,7 +15,7 @@ const errorController = require('./controllers/errors');
 const User = require("./models/user");
 const configs = require("./utils/configs");
 
-const MONGODB_CONNECTIONSTRING = "mongodb+srv://mongodb_user:urvi222jogF7ydSL@cluster0-lz5u1.gcp.mongodb.net/shop?w=majority";
+const MONGODB_CONNECTIONSTRING = configs.dbConnectionString;
 
 const store = new MongoDBStore({
     uri: MONGODB_CONNECTIONSTRING,

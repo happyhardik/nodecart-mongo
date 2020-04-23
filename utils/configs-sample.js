@@ -5,5 +5,6 @@ module.exports = {
     "stripe": {
         public_key: "pk_test_",
         secret_key: "sk_test_"
-    }
+    },
+    "dbConnectionString": ""
 }

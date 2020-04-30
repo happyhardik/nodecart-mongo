@@ -1,7 +1,6 @@
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
-const configs = require("../utils/configs");
-const stripe = require("stripe")(configs.stripe.secret_key);
+const stripe = require("stripe")(process.env.stripe_secret_key);
 
 const Product = require("../models/product");
 const Order = require("../models/order");

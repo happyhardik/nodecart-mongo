@@ -3,10 +3,9 @@ const {body,validationResult} = require("express-validator");
 const Product = require("../models/product");
 const Order = require("../models/order");
 const FileHelper = require("../utils/file");
-const configs = require("../utils/configs");
 
 
-const ITEMS_PER_PAGE = configs.defaultPageSize;
+const ITEMS_PER_PAGE = process.env.defaultPageSize;
 
 exports.productValidator = [
     body("title")

@@ -7,15 +7,24 @@ const mongoose = require("mongoose");
 const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
+const helmet = require("helmet");
+const compression = require("compression");
+const morgan = require("morgan");
+const fs = require("fs");
+const dotenv = require("dotenv");
 
 const adminRouter = require('./routes/admin');
 const shopRouter = require('./routes/shop');
 const authRouter = require('./routes/auth');
 const errorController = require('./controllers/errors');
 const User = require("./models/user");
-const configs = require("./utils/configs");
+const result = dotenv.config()
+ 
+if (result.error) {
+  throw result.error
+}
 
-const MONGODB_CONNECTIONSTRING = configs.dbConnectionString;
+const MONGODB_CONNECTIONSTRING = process.env.dbConnectionString;
 
 const store = new MongoDBStore({
     uri: MONGODB_CONNECTIONSTRING,
@@ -37,7 +46,18 @@ const fileFilter = (req,file,cb) => {
     }
     cb(null,false);
 }
+const accessLogStream = fs.createWriteStream(
+    "access.log",
+    { 
+        flags: 'a', 
+        interval: '1d', // rotate daily
+        path: path.join(__dirname, 'log')
+    }
+)
 
+app.use(helmet());
+app.use(compression());
+app.use(morgan('combined', {stream: accessLogStream}));
 app.use(flash());
 app.set("view engine", "pug");
 app.set("views", "views");
@@ -46,7 +66,7 @@ app.use(multer({storage: fileStorage, fileFilter: fileFilter}).single('image'));
 app.use(express.static(path.join(__dirname,"public")));
 app.use("/images",express.static(path.join(__dirname,"images")));
 // this salt should be passed as a parameter
-app.use(session({secret: configs.salt, resave: false, saveUninitialized: false, store: store}));
+app.use(session({secret: process.env.salt, resave: false, saveUninitialized: false, store: store}));
 app.use(csrfProtection);
 
 
@@ -78,7 +98,7 @@ app.use(errorController.get404);
 app.use(errorController.get500);
 
 mongoose.connect(MONGODB_CONNECTIONSTRING).then(result => {
-    app.listen(3000);
+    app.listen(process.env.PORT || 3000);
 })
 .catch(err => console.log(err)); 
 

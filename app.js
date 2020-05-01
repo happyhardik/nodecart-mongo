@@ -21,10 +21,7 @@ const errorController = require('./controllers/errors');
 const User = require("./models/user");
 
 const result = dotenv.config();
- 
-if (result.error) {
-  throw result.error
-}
+
 
 const MONGODB_CONNECTIONSTRING = process.env.dbConnectionString;
 

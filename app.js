@@ -12,13 +12,15 @@ const compression = require("compression");
 const morgan = require("morgan");
 const fs = require("fs");
 const dotenv = require("dotenv");
+const https = require("https");
 
 const adminRouter = require('./routes/admin');
 const shopRouter = require('./routes/shop');
 const authRouter = require('./routes/auth');
 const errorController = require('./controllers/errors');
 const User = require("./models/user");
-const result = dotenv.config()
+
+const result = dotenv.config();
  
 if (result.error) {
   throw result.error
@@ -32,6 +34,8 @@ const store = new MongoDBStore({
 });
 const app = express();
 const csrfProtection = csrf();
+//const privatekey = fs.readFileSync('server.key');
+//const certificate = fs.readFileSync('server.cert');
 const fileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null,'images');
@@ -98,6 +102,7 @@ app.use(errorController.get404);
 app.use(errorController.get500);
 
 mongoose.connect(MONGODB_CONNECTIONSTRING).then(result => {
+    //https.createServer({key: privatekey, cert: certificate},app).listen(process.env.PORT || 3000);
     app.listen(process.env.PORT || 3000);
 })
 .catch(err => console.log(err)); 

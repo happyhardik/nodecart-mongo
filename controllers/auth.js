@@ -33,7 +33,7 @@ exports.postLogin = (req, res, next) => {
             pageTitle: "Login",
         })
     }
-    User.findOne({email: email})
+    return User.findOne({email: email})
     .then((user)=>{
         if(!user) {
             req.flash("error", "Invalid email or password.");
@@ -55,8 +55,10 @@ exports.postLogin = (req, res, next) => {
             }
         })
         .catch(err => {console.log(err); req.flash("error","Something went wrong."); res.redirect("/login")});
-    }).catch(err => next(new Error(err)));
-     
+    }).catch(err => {
+        err.statusCode = 500;
+        return next(err);
+    });
 }
 
 exports.postLogout = (req, res, next) => {
@@ -64,6 +66,18 @@ exports.postLogout = (req, res, next) => {
         if(err) console.log(err);
         res.redirect("/")
     })
+}
+
+exports.getStatus = async (req,res,next) => {
+    const userId = req.userId;
+    try {
+        const user = await User.findById(userId);
+        res.status(200).json({status: user.status})
+    }
+    catch(err) {
+        if(!err.statusCode) err.statusCode=500;
+        next(err);
+    }
 }
 
 exports.getSignUp = (req, res, next) => {

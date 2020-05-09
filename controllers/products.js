@@ -69,7 +69,7 @@ exports.productForm = async (req,res,next) => {
         }
     
         return product.save().then(() => {
-            req.flash("success",`Product ${verb}ed successfully.`);
+            req.flash("success",`Product ${verb.toLowerCase()}ed successfully.`);
             res.redirect("/admin/products");
         }).catch(err => {
             const error = new Error(err);

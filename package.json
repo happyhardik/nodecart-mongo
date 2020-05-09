@@ -7,14 +7,17 @@
     "node": "^12.16.1"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --timeout 10000",
     "start": "node app.js",
     "start:dev": "nodemon app.js"
   },
   "author": "Hardik Thakker <happyhardik@gmail.com>",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "chai": "^4.2.0",
+    "mocha": "^7.1.2",
+    "nodemon": "^2.0.2",
+    "sinon": "^9.0.2"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -30,6 +33,7 @@
     "express-session": "^1.17.0",
     "express-validator": "^6.4.0",
     "helmet": "^3.22.0",
+    "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.5.5",
     "mongoose": "^5.9.9",
     "morgan": "^1.10.0",
